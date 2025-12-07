@@ -1,0 +1,353 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+---
+metadata:
+  title: >-
+    Letter to employer - return
+  short title: >-
+    return notification
+  description: |-
+    This interview helps someone write a letter to your employer when you are returning to your job after being released from military orders.
+  can_I_use_this_form: |
+    If you are a military reservist, you can use this interview to draft a letter to your civilian employer to let them know you are coming back to work after being deactivated from service.
+  before_you_start: |
+    This interview will help you write a letter to your employer when you are coming back to work after being deactivated from service.
+    
+    Before you get started, please gather:
+    
+    1. Your deactivation orders
+    2. Your employer's contact information 
+    
+    When you are finished, you will need to:
+    
+    1. Send the letter to your employer
+    2. Wait for their reply
+  maturity: production
+  estimated_completion_minutes: 10
+  estimated_completion_delta: 5
+  LIST_topics: 
+    - "VE-00-00-00-00"
+    - "VE-06-00-00-00"
+    - "VE-07-00-00-00"
+    - "WO-00-00-00-00"
+    - "WO-02-00-00-00"
+    - "WO-08-00-00-00"
+    - "WO-10-00-00-00"
+  tags:
+    - "VE-00-00-00-00"
+    - "VE-06-00-00-00"
+    - "VE-07-00-00-00"
+    - "WO-00-00-00-00"
+    - "WO-02-00-00-00"
+    - "WO-08-00-00-00"
+    - "WO-10-00-00-00"
+  authors:
+    - Jack Brandt
+  original_form: []
+  original_form_published_on: ""
+  allowed_courts: []
+  typical_role: "na"
+  al_weaver_version: "1.11.0"
+  generated_on: "2025-11-03"
+  languages:
+    - en
+  jurisdiction: NAM-US-US
+  review_date: 2025-11-03
+  form_titles:
+    - Letter to employer - return
+  form_numbers: []
+  update_notes: |
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  github_repo_name =  'docassemble-LetterToEmployerreturn'
+---
+code: |
+  interview_short_title = "Letter to employer - return"
+---
+code: |
+  al_form_type = "letter" 
+---
+objects:
+  - users: ALPeopleList.using(ask_number=True,target_number=1)
+  - other_parties: ALPeopleList.using(ask_number=True, target_number=1)
+  - military_deactivation_orders: DAFile.using(
+          title="military orders",
+          filename="military_deactivation_orders",
+          add_page_numbers=False,
+          inlcude_table_of_contents=False,
+        )
+---
+sections:
+  - review_letter_to_employer_return: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_letter_to_employer_return
+code: |
+  # Set the allowed courts for this interview
+  nav.set_section("review_letter_to_employer_return")
+  user_role = "na"
+  user_ask_role = "na"
+  users.gather()
+  set_parts(subtitle=str(users))
+  military_branch
+  work_departure_date
+  set_progress(20)
+  service_start_date
+  users[0].address.address
+  set_progress(40)
+  other_parties.gather()
+  other_parties[0].address.address
+  users[0].mobile_number
+  military_deactivation_orders
+  signature_fields
+  users[0].signature
+  interview_order_letter_to_employer_return = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  letter_to_employer_return_intro
+  interview_order_letter_to_employer_return
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  letter_to_employer_return_download
+---
+id: Letter_to_employer_return
+continue button field: letter_to_employer_return_intro
+question: |
+  Letter to employer - return
+subquestion: |
+  This interview will help you write a letter to your employer when you are being activated on military orders.
+  
+  Before you get started, please gather:
+  
+  1. Your orders
+  2. Your employer's contact information 
+  
+  When you are finished, you will need to:
+  
+  1. Send the letter to your employer
+  2. Wait for their reply
+
+  If you are a military reservist, you can use this interview to draft a letter to your civilian employer to let them know you received orders.
+
+  Most people take about 10 minutes to complete this interview.
+---
+id: Basic information
+question: |
+  Basic information
+fields:
+  - "What military branch are you in?": military_branch
+    input type: radio
+    choices:
+      - Coast Guard
+      - Marine Corps
+      - Army
+      - Air Force
+      - Space Force
+      - Navy
+      - National Guard
+  - "Today's date": letter_date
+    datatype: date
+---
+id: Dates Your civilian job
+question: |
+  Dates - Your civilian job
+fields:
+  - "What date will be your last day at work before your orders start?": work_departure_date
+    datatype: date
+  - "What day do you expect to return to work?": work_return_date
+    datatype: date
+---
+id: Dates Your orders
+question: |
+  Dates - Your orders
+fields:
+  - "What date do your orders say your service starts?": service_start_date
+    datatype: date
+  - "What date do your orders say your service ends?": service_end_date
+    datatype: date
+---
+question: |
+  Upload a copy of your deactivation orders.
+fields:
+  - Orders: military_deactivation_orders
+    datatype: file
+---
+question: |
+  Sign your name
+subquestion: |
+  By signing your name, you agree to
+  our terms and conditions.
+signature: users[0].signature
+under: |
+  ${ users[0].signature }
+---
+code: |
+  signature_fields = ["users[0].signature"]
+---
+id: preview letter_to_employer_return
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_recipient_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_letter_to_employer_return'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: letter_to_employer_return_preview_question    
+---
+id: letter to employer return review screen
+event: review_letter_to_employer_return
+question: |
+  Review your answers
+review:
+  - Edit: work_departure_date
+    button: |
+      **What date will be your last day at work before your orders start?**:
+      ${ work_departure_date }
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: military_branch
+    button: |
+      **What military branch are you in?**:
+      ${ military_branch }
+  - Edit: work_return_date
+    button: |
+      **What day do you expect to return to work?**:
+      ${ work_return_date }
+  - Edit: service_start_date
+    button: |
+      **What date do your orders say your service starts?**:
+      ${ service_start_date }
+  - Edit: other_parties.revisit
+    button: |
+      **Other parties**
+
+      % for item in other_parties:
+        * ${ item }
+      % endfor
+  - Edit: service_end_date
+    button: |
+      **What date do your orders say your service ends?**:
+      ${ service_end_date }
+  - Edit: letter_date
+    button: |
+      **Today's date**:
+      ${ letter_date }
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
+  - Signature: |
+      row_item.signature if defined("row_item.signature") else ""
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+edit:
+  - address.address
+  - signature
+  - name.first
+  - phone_number
+confirm: True
+
+---
+continue button field: other_parties.revisit
+question: |
+  Edit other_parties
+subquestion: |
+  ${ other_parties.table }
+
+  ${ other_parties.add_action() }
+---
+table: other_parties.table
+rows: other_parties
+columns:
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - address.address
+  - name.first
+confirm: True
+
+---
+id: download letter_to_employer_return
+event: letter_to_employer_return_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_letter_to_employer_return'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=True) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - letter_to_employer_return_attachment: ALDocument.using(title="Letter to employer - return", filename="letter_to_employer_return", enabled=True, has_addendum=False, )
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[letter_to_employer_return_attachment], filename="letter_to_employer_return", title="All forms to download for your records", )
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[letter_to_employer_return_attachment],  filename="letter_to_employer_return", title="All forms to file", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+attachment:
+  name: letter to employer return
+  filename: letter_to_employer_return
+  variable name: letter_to_employer_return_attachment[i]
+  skip undefined: True
+  docx template file: letter_to_employer_return.docx
+  tagged pdf: True
