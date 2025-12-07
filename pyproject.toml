@@ -1,0 +1,29 @@
+[build-system]
+requires = [
+    "setuptools==80.9.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docassemble.LetterToEmployerActivation"
+version = "1.0"
+description = "Letter to employer - activation"
+readme = "README.md"
+authors = [
+    { name = "Jack Brandt", email = "john.brandt@su.suffolk.edu" },
+]
+dependencies = [
+    "docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main",
+]
+license = "MIT"
+license-files = [
+    "LICENSE",
+]
+
+[project.urls]
+Homepage = "https://docassemble.org"
+
+[tool.setuptools.packages.find]
+where = [
+    ".",
+]
